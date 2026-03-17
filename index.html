@@ -1,13 +1,682 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --card:#FFFFFF;
+  --border:#e0e0e0;--border2:#cccccc;
+  --text:#000000;--muted:#666666;--dim:#999999;
+  --accent:#7B5EA7;
+  --accent2:#9B7DC4;
+  --accent-light:#F2EDFB;
+  --accent-mid:#C4ADE8;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:#FFFFFF;color:var(--text);overflow-x:hidden;line-height:1.6;cursor:none;}
+a,button,[onclick]{cursor:none;}
 
+/* CUSTOM CURSOR */
+#cursor-dot{position:fixed;top:0;left:0;width:10px;height:10px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,transform .15s;mix-blend-mode:multiply;}
+#cursor-glow{position:fixed;top:0;left:0;width:48px;height:48px;background:radial-gradient(circle,rgba(123,94,167,.5) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .35s,height .35s,opacity .35s;}
+body.cursor-hover #cursor-dot{width:18px;height:18px;background:rgba(123,94,167,.55);transform:translate(-50%,-50%) scale(1);}
+body.cursor-hover #cursor-glow{width:90px;height:90px;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:.85rem 2.8rem;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;}
+.nav-anchors{display:flex;gap:2rem;list-style:none;}
+.nav-anchors a{text-decoration:none;color:var(--muted);font-size:.83rem;font-weight:500;transition:color .2s;cursor:pointer;}
+.nav-anchors a:hover,.nav-anchors a.active{color:var(--accent);}
+.nav-btn{background:var(--accent);color:#fff;border:none;padding:.48rem 1.15rem;border-radius:50px;font-size:.8rem;font-weight:600;cursor:none;font-family:'DM Sans',sans-serif;transition:background .2s,transform .5s cubic-bezier(.16,1,.3,1);will-change:transform;display:inline-block;}
+.nav-btn:hover{background:var(--accent2);}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:2rem;padding:5rem 2.8rem 4rem;max-width:1180px;margin:0 auto;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:1.05rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem;background:var(--accent-light);border:1.5px solid var(--accent-mid);padding:7px 20px;border-radius:50px;}
+.ey-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:3.8rem;font-weight:700;line-height:1.06;letter-spacing:-2px;margin-bottom:1.2rem;min-height:5.5rem;}
+.hero-cursor{display:inline-block;width:3px;height:.9em;background:var(--accent);margin-left:3px;vertical-align:middle;animation:blink .75s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* HERO GLOW ORBS */
+.hero-glow-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0;}
+.orb1{width:680px;height:680px;top:-180px;left:-180px;background:radial-gradient(circle,rgba(123,94,167,.26) 0%,rgba(155,125,196,.12) 40%,transparent 70%);animation:orbFloat 6s ease-in-out infinite;}
+.orb2{width:460px;height:460px;bottom:-120px;right:-100px;background:radial-gradient(circle,rgba(155,125,196,.2) 0%,rgba(123,94,167,.08) 40%,transparent 70%);animation:orbFloat 9s ease-in-out infinite reverse;}
+@keyframes orbFloat{0%,100%{transform:scale(1) translateY(0);}50%{transform:scale(1.14) translateY(-24px);}}
+.hero-desc{color:var(--muted);font-size:.98rem;line-height:1.8;max-width:420px;margin-bottom:2rem;}
+.hero-desc strong{color:var(--text);font-weight:500;}
+.btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{padding:.75rem 1.7rem;border-radius:50px;font-size:.88rem;font-weight:600;cursor:none;font-family:'DM Sans',sans-serif;border:none;transition:background .2s,transform .5s cubic-bezier(.16,1,.3,1),box-shadow .2s;will-change:transform;display:inline-block;}
+.btn-solid{background:var(--accent);color:#fff;border-radius:28px;font-weight:700;letter-spacing:.5px;}
+.btn-solid:hover{background:var(--accent2);}
+.btn-ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent-mid);}
+.btn-ghost:hover{background:var(--accent-light);border-color:var(--accent);}
+
+/* PROBLEM & SOLUTION */
+.problem-solution{position:relative;z-index:1;border-top:1px solid var(--border);padding:5.5rem 2.8rem;background:var(--accent-light);}
+.ps-container{max-width:1180px;margin:0 auto;}
+
+/* SHARED SECTION */
+.page{position:relative;z-index:1;padding:5.5rem 2.8rem;max-width:1180px;margin:0 auto;}
+.page-full{position:relative;z-index:1;border-top:1px solid var(--border);}
+.page-full .inner{max-width:1180px;margin:0 auto;padding:5.5rem 2.8rem;}
+.sec-label{display:flex;align-items:center;gap:10px;margin-bottom:.7rem;}
+.sec-line{width:22px;height:2px;background:var(--accent);border-radius:2px;}
+.sec-tag{font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);}
+.sec-h{font-family:'Space Grotesk',sans-serif;font-size:2.1rem;font-weight:700;letter-spacing:-.5px;margin-bottom:.6rem;}
+.sec-sub{color:var(--muted);max-width:580px;font-size:.88rem;line-height:1.8;margin-bottom:1.2rem;}
+
+/* DESIGN PROCESS */
+.design-process{position:relative;z-index:1;border-top:1px solid var(--border);padding:5.5rem 2.8rem;}
+.dp-container{max-width:1180px;margin:0 auto;}
+.dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start;margin-top:2rem;}
+.dp-artifact{background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:1.8rem;transition:border-color .35s,box-shadow .35s,transform .6s cubic-bezier(.16,1,.3,1);will-change:transform;transform-style:preserve-3d;}
+.dp-artifact:hover{border-color:var(--accent);box-shadow:0 20px 56px rgba(123,94,167,.18);}
+.dp-artifact h4{font-size:.95rem;font-weight:600;margin-bottom:.8rem;color:#333;}
+.dp-artifact p{font-size:.82rem;line-height:1.7;color:var(--muted);margin-bottom:1.2rem;}
+.artifact-image{background:#f9f9f9;border-radius:8px;border:1px solid var(--border);padding:1.5rem;text-align:left;font-size:.82rem;line-height:1.7;color:var(--muted);display:block;}
+
+/* CRAFTS */
+.craft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;}
+.ccraft{background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:2rem 1.5rem;text-align:center;cursor:none;transition:border-color .35s,box-shadow .35s,transform .6s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;will-change:transform;transform-style:preserve-3d;}
+.ccraft:hover,.ccraft.active{border-color:var(--accent);box-shadow:0 28px 70px rgba(123,94,167,.25);}
+.ccraft h3{font-size:.88rem;font-weight:600;margin-bottom:.28rem;}
+.craft-illo{width:140px;height:140px;margin:0 auto 1rem;border-radius:16px;overflow:hidden;}
+.craft-illo img{transition:transform .45s cubic-bezier(.16,1,.3,1);}
+.ccraft:hover .craft-illo img{transform:scale(1.13);}
+.ccraft p{font-size:.73rem;color:var(--muted);margin-bottom:.6rem;line-height:1.5;}
+.lv{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:50px;letter-spacing:.4px;}
+.lv-b{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);}
+.lv-i{background:#f0f0f0;color:#555;border:1px solid #ddd;}
+.craft-hint{text-align:center;font-size:.78rem;color:var(--muted);margin-top:1.2rem;opacity:.7;}
+
+/* PROCESS STEPS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.steps::after{content:'';position:absolute;top:26px;left:12%;right:12%;height:1.5px;background:var(--accent-mid);z-index:0;}
+.step{text-align:center;padding:0 .75rem;position:relative;z-index:1;}
+.step-n{width:56px;height:56px;border-radius:4px;border:2px solid var(--accent-mid);background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent);}
+.step h3{font-size:.86rem;font-weight:600;margin-bottom:.28rem;}
+.step p{font-size:.75rem;color:var(--muted);line-height:1.6;}
+
+/* CLASSES */
+.cl-filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.8rem;}
+.cl-filter{background:#FFFFFF;border:1px solid var(--border);color:var(--text);padding:.42rem 1.2rem;border-radius:50px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.cl-filter.on,.cl-filter:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:11px;}
+.clcard{position:relative;background:#FFFFFF;border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .35s,box-shadow .35s,transform .6s cubic-bezier(.16,1,.3,1);will-change:transform;transform-style:preserve-3d;}
+.clcard:hover{border-color:var(--accent);box-shadow:0 20px 56px rgba(123,94,167,.2);}
+.clcard.hidden{display:none;}
+.cl-top{padding:1.25rem;border-bottom:1px solid var(--border);background:#FFFFFF;}
+.cl-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:50px;letter-spacing:.4px;margin-bottom:6px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);}
+.cl-top h3{font-size:.92rem;font-weight:600;}
+.cl-body{padding:1.05rem 1.2rem;}
+.cl-meta{display:flex;flex-direction:column;gap:4px;font-size:.74rem;color:var(--muted);margin-bottom:12px;font-weight:500;}
+.spots{display:inline-flex;align-items:center;gap:5px;}
+.spot-bar{height:3px;width:50px;background:#e0e0e0;border-radius:2px;overflow:hidden;}
+.spot-fill{height:100%;border-radius:2px;background:var(--accent);}
+.instrs{display:flex;flex-wrap:wrap;gap:8px;margin-top:2rem;}
+.instr{display:flex;align-items:center;gap:9px;background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:50px;padding:6px 14px 6px 6px;}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.68rem;color:#fff;flex-shrink:0;background:var(--accent);}
+.instr-t h4{font-size:.76rem;font-weight:600;}
+.instr-t p{font-size:.65rem;color:var(--muted);}
+.no-classes{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem;display:none;}
+.no-classes.show{display:block;}
+.enroll-btn{padding:.62rem;text-align:center;font-size:.85rem;font-weight:600;color:#fff;background:var(--accent);border-radius:50px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;width:100%;display:block;}
+.enroll-btn:hover{background:var(--accent2);}
+
+/* CTA */
+.cta-band{position:relative;z-index:1;border-top:1px solid var(--border);padding:6rem 2.8rem;text-align:center;background:var(--accent-light);}
+.cta-band h2{font-family:'Space Grotesk',sans-serif;font-size:2.8rem;font-weight:700;letter-spacing:-.5px;margin-bottom:.75rem;}
+.cta-band>p{color:var(--muted);font-size:.93rem;margin-bottom:2.4rem;max-width:400px;margin-left:auto;margin-right:auto;}
+.cta-card{display:inline-flex;align-items:center;gap:1.8rem;background:#FFFFFF;border:1.5px solid var(--accent-mid);border-radius:22px;padding:1.4rem 2rem;box-shadow:0 4px 24px rgba(123,94,167,.1);}
+.qr-sq{width:78px;height:78px;background:var(--accent-light);border-radius:14px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--accent-mid);}
+.cta-info h4{font-size:.86rem;font-weight:600;margin-bottom:3px;text-align:left;}
+.cta-info>p{font-size:.73rem;color:var(--muted);margin-bottom:8px;text-align:left;}
+.badges{display:flex;gap:6px;}
+.badge{font-size:.66rem;font-weight:600;padding:3px 10px;border-radius:50px;background:var(--accent);color:#fff;border:none;}
+
+/* TOAST */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:#FFFFFF;border:1.5px solid var(--accent-mid);color:var(--accent);padding:.7rem 1.4rem;border-radius:50px;font-size:.82rem;font-weight:600;z-index:999;opacity:0;transition:all .3s;font-family:'DM Sans',sans-serif;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(123,94,167,.15);}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.8rem;}
+.footer-content{max-width:1180px;margin:0 auto;}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:2rem;margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border);}
+.footer-team{font-size:.75rem;color:var(--muted);line-height:1.8;}
+.footer-team strong{color:#000;}
+.footer-project{text-align:right;font-size:.75rem;color:var(--muted);}
+.footer-bottom{text-align:center;font-size:.7rem;color:var(--dim);}
+
+@media(max-width:768px){
+  .dp-grid{grid-template-columns:1fr;}
+  .hero{grid-template-columns:1fr;gap:1.5rem;}
+  .steps{grid-template-columns:1fr;}
+  .steps::after{display:none;}
+  nav{flex-direction:column;gap:1rem;}
+  .nav-anchors{flex-direction:column;gap:1rem;}
+}
+</style>
+</head>
+<body>
+<div id="cursor-dot"></div>
+<div id="cursor-glow"></div>
+<div id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" onclick="showSection('home')"><img src="logo.png" alt="CraftSpace Logo" style="height:40px;width:auto;"></a>
+  <ul class="nav-anchors">
+    <li><a href="#" data-section="behind" onclick="showSection('behind');return false;">Behind the App</a></li>
+    <li><a href="#" data-section="inside" onclick="showSection('inside');return false;">Inside the App</a></li>
+    <li><a href="#" data-section="howworks" onclick="showSection('howworks');return false;">How It Works</a></li>
+  </ul>
+  <button class="nav-btn" id="nav-get-app" style="display:none;" onclick="scrollToCTA()">Get the App →</button>
+</nav>
+
+<!-- HERO -->
+<div id="hero-wrap">
+<section style="position:relative;z-index:1;overflow:hidden;">
+<div class="hero-glow-orb orb1"></div>
+<div class="hero-glow-orb orb2"></div>
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">CraftSpace</div>
+    <h1 id="hero-title"><span id="typed-text"></span><span class="hero-cursor" id="hero-cursor"></span></h1>
+    <p class="hero-desc">Pick a craft, follow the tutorial, walk into a studio that's already set up for you. CraftSpace connects your phone to a smart board so beginners spend less time figuring out and more time making.</p>
+    <div class="btns">
+      <button class="btn btn-solid" onclick="scrollToCTA()">Download the App</button>
+      <button class="btn btn-ghost" onclick="showSection('behind')">See the Research</button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;">
+    <img src="top.jpeg" alt="CraftSpace Hero" style="width:100%;height:auto;border-radius:12px;object-fit:cover;">
+  </div>
+</div>
+</section>
+</div>
+
+<!-- BEHIND THE APP -->
+<div id="behind-wrap" style="display:none;">
+
+<div class="problem-solution" id="problem">
+  <div class="ps-container">
+    <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Why We Built This</span></div>
+    <h2 class="sec-h">Why CraftSpace Exists</h2>
+    <p class="sec-sub">Most beginners give up before they start — too many options, no clear guidance, and shared studio spaces that feel intimidating and inaccessible.</p>
+    <p class="sec-sub">CraftSpace bridges your phone and the studio smart board so you always know what to make, what to grab, and who to ask.</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Concept Video</span></div>
+  <h2 class="sec-h">See the app in action</h2>
+  <p class="sec-sub">Watch how CraftSpace connects digital discovery with hands-on making at the studio.</p>
+  <iframe width="100%" height="500" src="https://www.youtube.com/embed/wjTjEVlL_pc?si=RffdSzai4TYInldB" title="CraftSpace Concept Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="border-radius:12px;display:block;"></iframe>
+</div>
+
+<div class="design-process">
+  <div class="dp-container">
+    <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Our Process</span></div>
+    <h2 class="sec-h">How we designed it</h2>
+    <p class="sec-sub">From 21 user interviews and a makerspace visit to a fully interactive prototype.</p>
+    <div class="dp-grid">
+
+      <div class="dp-artifact">
+        <img src="user.jpeg" alt="User Research" style="width:100px;height:100px;border-radius:8px;margin-bottom:1rem;object-fit:cover;">
+        <h4>User Research</h4>
+        <p>We surveyed 21 young adults (ages 18–25) and conducted contextual inquiry at The MILL makerspace. Most participants are beginners learning at home through online tutorials, with frustrations around isolation, lack of structure, and intimidating shared spaces.</p>
+        <div class="artifact-image">
+          <div style="margin-bottom:1rem;">
+            <strong style="color:#000;display:block;margin-bottom:.5rem;">Limited Support for Beginners</strong>
+            90% of learners practice at home using online tutorials. Beginners lack accessible guidance and feel hesitant to ask for help.
+          </div>
+          <div style="margin-bottom:1rem;">
+            <strong style="color:#000;display:block;margin-bottom:.5rem;">Fear of Judgment</strong>
+            A welcoming, non-judgmental environment is critical. Supportive peers and mentors significantly reduce intimidation and fear of failure.
+          </div>
+          <div>
+            <strong style="color:#000;display:block;margin-bottom:.5rem;">Ineffective Shared Spaces</strong>
+            Crowding, long wait times, and inconsistent tools create barriers. Most beginners prefer learning at home despite limited resources.
+          </div>
+        </div>
+      </div>
+
+      <div class="dp-artifact">
+        <img src="paper.jpeg" alt="Paper Prototype" style="width:100px;height:100px;border-radius:8px;margin-bottom:1rem;object-fit:cover;">
+        <h4>Paper Prototype</h4>
+        <p>Built low-fidelity prototypes to test the craft selection and class enrollment flows with users. Key insight: progress tracking was important.</p>
+        <div style="display:grid;grid-template-columns:1fr;gap:2rem;margin-top:1.5rem;">
+          <img src="Overview Paper Prototype.png" alt="Paper Prototype Overview" style="border-radius:8px;border:1px solid #e0e0e0;width:100%;height:auto;max-height:500px;object-fit:contain;">
+          <img src="Physical Space.png" alt="Physical Space Prototype" style="border-radius:8px;border:1px solid #e0e0e0;width:100%;height:auto;max-height:500px;object-fit:contain;">
+        </div>
+      </div>
+
+      <div class="dp-artifact">
+        <img src="phone.jpeg" alt="Digital Mockup" style="width:100px;height:100px;border-radius:8px;margin-bottom:1rem;object-fit:cover;">
+        <h4>Digital Mockup (V1)</h4>
+        <p>Created a fully interactive Figma prototype with complete user flows — craft browsing, equipment reservation, class enrollment, progress tracking, and mentor connections.</p>
+        <div style="background:var(--accent-light);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;padding:1.5rem;border-radius:12px;margin-top:1.2rem;border:1px solid var(--accent-mid);">
+          <div style="font-size:2.5rem;">🎨</div>
+          <a href="https://www.figma.com/make/WZKxjsBwYO6B1um4KvgNob/Crafting-Studio-App-Prototype?fullscreen=1&t=dhu8IwBJqjBD7NjK-1" target="_blank" style="background:var(--accent);color:#fff;padding:.6rem 1.4rem;border-radius:50px;font-size:.8rem;font-weight:600;text-decoration:none;display:inline-block;font-family:'DM Sans',sans-serif;">Open Prototype →</a>
+        </div>
+      </div>
+
+      <div class="dp-artifact">
+        <img src="poster.jpeg" alt="Poster" style="width:100px;height:100px;border-radius:8px;margin-bottom:1rem;object-fit:cover;">
+        <h4>Poster</h4>
+        <p>Final visual representation of CraftSpace, showcasing key features and the complete user experience from app to studio.</p>
+        <img src="CSE 440 Poster.png" alt="CSE 440 Project Poster" style="border-radius:8px;border:1px solid #e0e0e0;width:100%;height:auto;max-height:600px;object-fit:contain;margin-top:1.5rem;">
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+</div><!-- end behind-wrap -->
+
+<!-- INSIDE THE APP -->
+<div id="inside-wrap" style="display:none;">
+
+<div class="page-full" id="crafts">
+<div class="inner">
+  <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">In the App</span></div>
+  <h2 class="sec-h">Four hands-on crafts</h2>
+  <p class="sec-sub">Browse and filter by craft type in the app. Each includes beginner-friendly tutorials, equipment guides, and available classes at our studio.</p>
+  <div class="craft-grid" id="craftGrid">
+    <div class="ccraft" data-craft="crocheting" onclick="selectCraft(this)">
+      <div class="craft-illo"><img src="crotchet.jpeg" alt="Crocheting" style="width:100%;height:100%;object-fit:cover;object-position:left center;"></div>
+      <h3>Crocheting</h3><p>Yarn, hooks, and endless creativity.</p><span class="lv lv-b">Beginner</span>
+    </div>
+    <div class="ccraft" data-craft="knitting" onclick="selectCraft(this)">
+      <div class="craft-illo"><img src="knitting.jpeg" alt="Knitting" style="width:100%;height:100%;object-fit:cover;object-position:left center;"></div>
+      <h3>Knitting</h3><p>Two needles, endless possibilities.</p><span class="lv lv-b">Beginner</span>
+    </div>
+    <div class="ccraft" data-craft="3dprinting" onclick="selectCraft(this)">
+      <div class="craft-illo"><img src="3D.jpeg" alt="3D Printing" style="width:100%;height:100%;object-fit:cover;object-position:left center;"></div>
+      <h3>3D Printing</h3><p>Print physical objects from digital models.</p><span class="lv lv-i">Intermediate</span>
+    </div>
+    <div class="ccraft" data-craft="painting" onclick="selectCraft(this)">
+      <div class="craft-illo"><img src="painting.jpeg" alt="Painting" style="width:100%;height:100%;object-fit:cover;object-position:left center;"></div>
+      <h3>Painting</h3><p>Acrylic, watercolor, and mixed media.</p><span class="lv lv-b">Beginner</span>
+    </div>
+</div>
+<p class="craft-hint" id="craftHint">👆 Select a craft to filter classes</p>
+
+<div class="page-full" id="classes">
+<div class="inner">
+  <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Live Classes</span></div>
+  <h2 class="sec-h">Studio workshops</h2>
+  <p class="sec-sub">Expert-led, in-person classes available to enroll in through the app. See what's coming next.</p>
+  <div class="cl-filter-bar" id="filterBar">
+    <button class="cl-filter on" data-filter="all" onclick="filterClasses('all',this)">All Classes</button>
+    <button class="cl-filter" data-filter="crocheting" onclick="filterClasses('crocheting',this)">Crocheting</button>
+    <button class="cl-filter" data-filter="knitting" onclick="filterClasses('knitting',this)">Knitting</button>
+    <button class="cl-filter" data-filter="3dprinting" onclick="filterClasses('3dprinting',this)">3D Printing</button>
+    <button class="cl-filter" data-filter="painting" onclick="filterClasses('painting',this)">Painting</button>
+  </div>
+  <div class="cl-grid" id="classGrid">
+    <div class="clcard" data-craft="crocheting">
+      <div class="cl-top"><span class="cl-badge">Beginner</span><h3>Beginner Crochet Basics</h3></div>
+      <div class="cl-body"><div class="cl-meta"><span>📅 Mon, Mar 10 · 3:00 PM</span><span>⏱ 3 hours</span><span class="spots">👥 <div class="spot-bar"><div class="spot-fill" style="width:60%"></div></div> 5 spots left</span><span>👩‍🏫 Sarah Chen</span></div><button class="enroll-btn" onclick="enrollToApp()">Enroll in the App</button></div>
+    </div>
+    <div class="clcard" data-craft="crocheting">
+      <div class="cl-top"><span class="cl-badge">Advanced</span><h3>Advanced Amigurumi</h3></div>
+      <div class="cl-body"><div class="cl-meta"><span>📅 Wed, Mar 12 · 4:00 PM</span><span>⏱ 3 hours</span><span class="spots">👥 <div class="spot-bar"><div class="spot-fill" style="width:40%"></div></div> 3 spots left</span><span>👩‍🏫 Emma Wilson</span></div><button class="enroll-btn" onclick="enrollToApp()">Enroll in the App</button></div>
+    </div>
+    <div class="clcard" data-craft="3dprinting">
+      <div class="cl-top"><span class="cl-badge">Beginner</span><h3>Intro to 3D Printing</h3></div>
+      <div class="cl-body"><div class="cl-meta"><span>📅 Fri, Mar 14 · 2:00 PM</span><span>⏱ 4 hours</span><span class="spots">👥 <div class="spot-bar"><div class="spot-fill" style="width:70%"></div></div> 6 spots left</span><span>👨‍🏫 Marcus Rodriguez</span></div><button class="enroll-btn" onclick="enrollToApp()">Enroll in the App</button></div>
+    </div>
+    <div class="clcard" data-craft="painting">
+      <div class="cl-top"><span class="cl-badge">Beginner</span><h3>Watercolor for Beginners</h3></div>
+      <div class="cl-body"><div class="cl-meta"><span>📅 Sat, Mar 15 · 1:00 PM</span><span>⏱ 2 hours</span><span class="spots">👥 <div class="spot-bar"><div class="spot-fill" style="width:80%"></div></div> 8 spots left</span><span>👩‍🏫 Sarah Chen</span></div><button class="enroll-btn" onclick="enrollToApp()">Enroll in the App</button></div>
+    </div>
+    <div class="clcard" data-craft="knitting">
+      <div class="cl-top"><span class="cl-badge">Beginner</span><h3>Knitting Fundamentals</h3></div>
+      <div class="cl-body"><div class="cl-meta"><span>📅 Tue, Mar 11 · 5:00 PM</span><span>⏱ 2 hours</span><span class="spots">👥 <div class="spot-bar"><div class="spot-fill" style="width:50%"></div></div> 4 spots left</span><span>👩‍🏫 Emma Wilson</span></div><button class="enroll-btn" onclick="enrollToApp()">Enroll in the App</button></div>
+    </div>
+  </div>
+  <div class="no-classes" id="noClasses">No classes found for this craft yet — check back soon.</div>
+  <div class="instrs">
+    <div class="instr"><div class="av">SC</div><div class="instr-t"><h4>Sarah Chen</h4><p>Crochet &amp; Painting</p></div></div>
+    <div class="instr"><div class="av">EW</div><div class="instr-t"><h4>Emma Wilson</h4><p>Advanced Fiber Arts</p></div></div>
+    <div class="instr"><div class="av">MR</div><div class="instr-t"><h4>Marcus Rodriguez</h4><p>3D Printing</p></div></div>
+  </div>
+</div>
+</div>
+
+</div><!-- end inner -->
+</div><!-- end page-full#crafts -->
+</div><!-- end inside-wrap -->
+
+<!-- HOW IT WORKS -->
+<div id="howworks-wrap" style="display:none;">
+<section class="page" id="process">
+  <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Get Started</span></div>
+  <h2 class="sec-h">How it works</h2>
+  <p class="sec-sub">Download the app and get making in four simple steps.</p>
+  <div class="steps">
+    <div class="step"><div class="step-n">01</div><h3>Download</h3><p>Get CraftSpace on iOS and Android. Free account setup.</p></div>
+    <div class="step"><div class="step-n">02</div><h3>Browse &amp; Learn</h3><p>Explore crafts, watch tutorials, reserve equipment before you arrive at the studio.</p></div>
+    <div class="step"><div class="step-n">03</div><h3>Visit Studio</h3><p>Scan the QR code to check in and start making with reserved tools and workspaces.</p></div>
+    <div class="step"><div class="step-n">04</div><h3>Enroll in Classes</h3><p>Sign up for live workshops with expert instructors. Track your progress and earn badges.</p></div>
+  </div>
+</section>
+</div>
+
+<!-- CTA -->
+<div class="cta-band" id="cta-section">
+  <h2>Start making. It's free.</h2>
+  <p>Download CraftSpace on iOS and Android and walk into a studio that's already set up for you.</p>
+  <div class="cta-card">
+    <div class="qr-sq">
+      <svg width="56" height="56" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="24" height="24" rx="2" fill="none" stroke="#7B5EA7" stroke-width="2"/>
+        <rect x="10" y="10" width="12" height="12" rx="1" fill="#7B5EA7"/>
+        <rect x="32" y="4" width="24" height="24" rx="2" fill="none" stroke="#7B5EA7" stroke-width="2"/>
+        <rect x="38" y="10" width="12" height="12" rx="1" fill="#7B5EA7"/>
+        <rect x="4" y="32" width="24" height="24" rx="2" fill="none" stroke="#7B5EA7" stroke-width="2"/>
+        <rect x="10" y="38" width="12" height="12" rx="1" fill="#7B5EA7"/>
+        <rect x="32" y="32" width="4" height="4" fill="#7B5EA7"/><rect x="40" y="32" width="4" height="4" fill="#7B5EA7"/>
+        <rect x="48" y="32" width="8" height="4" fill="#7B5EA7"/><rect x="32" y="40" width="8" height="4" fill="#7B5EA7"/>
+        <rect x="44" y="40" width="4" height="4" fill="#7B5EA7"/><rect x="32" y="48" width="4" height="8" fill="#7B5EA7"/>
+        <rect x="40" y="48" width="16" height="4" fill="#7B5EA7"/><rect x="52" y="52" width="4" height="4" fill="#7B5EA7"/>
+      </svg>
+    </div>
+    <div class="cta-info">
+      <h4>Download the app</h4>
+      <p>Free · No commitment</p>
+      <div class="badges"><span class="badge">App Store</span><span class="badge">Google Play</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-top">
+      <div>
+        <img src="logo.png" alt="CraftSpace Logo" style="height:40px;width:auto;margin-bottom:.8rem;display:block;">
+        <div class="footer-team">
+          <strong>Team:</strong><br>
+          Aliyah Mcrae<br>
+          Elizabeth Alvarez<br>
+          Lillian Nguyen<br>
+          Rodas Tekle
+        </div>
+      </div>
+      <div class="footer-project">
+        <strong>CSE 440</strong><br>
+        Human Computer Interaction<br>
+        Winter 2026<br>
+        University of Washington
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 CraftSpace · University of Washington</div>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════
+   SCROLL TO CTA / QR
+══════════════════════════════════════════ */
+function scrollToCTA(){
+  const el=document.getElementById('cta-section');
+  const nav=document.querySelector('nav');
+  const top=el.getBoundingClientRect().top+window.pageYOffset-(nav?nav.offsetHeight:0);
+  window.scrollTo({top,behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════════
+   TYPEWRITER
+══════════════════════════════════════════ */
+const phrases = [
+  "The studio that\nsyncs with\nyour phone.",
+  "Pick a craft.\nFollow along.\nStart making.",
+  "Made for beginners.\nBuilt to inspire."
+];
+let phraseIdx=0,charIdx=0,deleting=false;
+const typedEl=document.getElementById('typed-text');
+function type(){
+  const cur=phrases[phraseIdx];
+  if(!deleting){
+    charIdx++;
+    typedEl.innerHTML=cur.slice(0,charIdx).replace(/\n/g,'<br>');
+    if(charIdx===cur.length){setTimeout(()=>{deleting=true;type();},2400);return;}
+    setTimeout(type,52);
+  } else {
+    charIdx--;
+    typedEl.innerHTML=cur.slice(0,charIdx).replace(/\n/g,'<br>');
+    if(charIdx===0){deleting=false;phraseIdx=(phraseIdx+1)%phrases.length;setTimeout(type,380);return;}
+    setTimeout(type,28);
+  }
+}
+type();
+
+/* ══════════════════════════════════════════
+   CUSTOM CURSOR + GLOW TRAIL
+══════════════════════════════════════════ */
+const dot=document.getElementById('cursor-dot');
+const glow=document.getElementById('cursor-glow');
+let mx=window.innerWidth/2,my=window.innerHeight/2,gx=mx,gy=my;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+});
+(function animGlow(){
+  gx+=(mx-gx)*.09; gy+=(my-gy)*.09;
+  glow.style.left=gx+'px'; glow.style.top=gy+'px';
+  requestAnimationFrame(animGlow);
+})();
+
+const hoverEls='a,button,[onclick],.ccraft,.clcard,.dp-artifact,.logo,.nav-btn,.enroll-btn';
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest(hoverEls)) document.body.classList.add('cursor-hover');
+});
+document.addEventListener('mouseout',e=>{
+  if(e.target.closest(hoverEls)) document.body.classList.remove('cursor-hover');
+});
+
+/* ══════════════════════════════════════════
+   3D CARD TILT
+══════════════════════════════════════════ */
+function initTilt(){
+  document.querySelectorAll('.ccraft,.clcard,.dp-artifact').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=e.clientX-r.left, y=e.clientY-r.top;
+      const cx=r.width/2, cy=r.height/2;
+      const rotX=((y-cy)/cy)*-13;
+      const rotY=((x-cx)/cx)*13;
+      card.style.transform=`perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(14px)`;
+      const img=card.querySelector('.craft-illo img,img');
+      if(img) img.style.transform=`scale(1.1) translate(${rotY*1.8}px,${rotX*-1.8}px)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transform='';
+      const img=card.querySelector('.craft-illo img,img');
+      if(img) img.style.transform='';
+    });
+  });
+}
+
+/* ══════════════════════════════════════════
+   MAGNETIC BUTTONS
+══════════════════════════════════════════ */
+function initMagnetic(){
+  document.querySelectorAll('.btn,.nav-btn').forEach(btn=>{
+    btn.addEventListener('mousemove',e=>{
+      const r=btn.getBoundingClientRect();
+      const x=(e.clientX-r.left-r.width/2)*0.38;
+      const y=(e.clientY-r.top-r.height/2)*0.52;
+      btn.style.transform=`translate(${x}px,${y}px)`;
+    });
+    btn.addEventListener('mouseleave',()=>{
+      btn.style.transition='transform .6s cubic-bezier(.16,1,.3,1)';
+      btn.style.transform='translate(0,0)';
+      setTimeout(()=>btn.style.transition='',620);
+    });
+    btn.addEventListener('mouseenter',()=>{
+      btn.style.transition='transform .15s';
+    });
+  });
+}
+
+/* ══════════════════════════════════════════
+   TEXT SCRAMBLE
+══════════════════════════════════════════ */
+const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%&*!?';
+function scramble(el){
+  const original=el.textContent;
+  let iter=0;
+  const total=original.length*4;
+  const id=setInterval(()=>{
+    el.textContent=original.split('').map((ch,i)=>{
+      if(ch===' ')return ' ';
+      if(iter>i*4)return ch;
+      return CHARS[Math.floor(Math.random()*CHARS.length)];
+    }).join('');
+    iter++;
+    if(iter>=total){el.textContent=original;clearInterval(id);}
+  },28);
+}
+
+/* ══════════════════════════════════════════
+   SECTION ENTRANCE ANIMATION
+══════════════════════════════════════════ */
+function animateIn(wrapper){
+  const targets=wrapper.querySelectorAll(
+    '.sec-label,.sec-h,.sec-sub,.dp-artifact,.ccraft,.clcard,.step,iframe,.craft-hint,.instrs,.hero-eyebrow,#hero-title,.hero-desc,.btns'
+  );
+  // reset
+  targets.forEach(el=>{
+    el.style.transition='none';
+    el.style.opacity='0';
+    el.style.transform='translateY(56px)';
+  });
+  // double-rAF ensures the browser has painted the opacity:0 state before transitioning
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      targets.forEach((el,i)=>{
+        const d=i*75;
+        el.style.transition=`opacity .8s cubic-bezier(.16,1,.3,1) ${d}ms,transform .8s cubic-bezier(.16,1,.3,1) ${d}ms`;
+        el.style.opacity='1';
+        el.style.transform='translateY(0)';
+      });
+      wrapper.querySelectorAll('.sec-h').forEach((h,i)=>{
+        setTimeout(()=>scramble(h),i*75+200);
+      });
+    });
+  });
+  // hard fallback — guarantee everything visible after 500ms no matter what
+  setTimeout(()=>{
+    targets.forEach(el=>{
+      el.style.opacity='1';
+      el.style.transform='translateY(0)';
+    });
+  },500);
+  setTimeout(()=>{initTilt();initMagnetic();},150);
+}
+
+/* ══════════════════════════════════════════
+   SECTION SWITCHER
+══════════════════════════════════════════ */
+const sections=['hero-wrap','behind-wrap','inside-wrap','howworks-wrap'];
+function showSection(name){
+  sections.forEach(id=>document.getElementById(id).style.display='none');
+  document.querySelectorAll('.nav-anchors a').forEach(a=>a.classList.remove('active'));
+  const navGetApp=document.getElementById('nav-get-app');
+  let wrap=null;
+  if(name==='home'){
+    wrap=document.getElementById('hero-wrap');wrap.style.display='block';
+    navGetApp.style.display='none';
+  } else if(name==='behind'){
+    wrap=document.getElementById('behind-wrap');wrap.style.display='block';
+    document.querySelector('[data-section="behind"]').classList.add('active');
+    navGetApp.style.display='';
+  } else if(name==='inside'){
+    wrap=document.getElementById('inside-wrap');wrap.style.display='block';
+    document.querySelector('[data-section="inside"]').classList.add('active');
+    navGetApp.style.display='';
+  } else if(name==='howworks'){
+    wrap=document.getElementById('howworks-wrap');wrap.style.display='block';
+    document.querySelector('[data-section="howworks"]').classList.add('active');
+    navGetApp.style.display='';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(wrap) animateIn(wrap);
+}
+
+window.addEventListener('DOMContentLoaded',()=>animateIn(document.getElementById('hero-wrap')));
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function showToast(msg,icon=''){
+  const t=document.getElementById('toast');
+  t.textContent=(icon?icon+' ':'')+msg;
+  t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(12px)';},2600);
+}
+
+/* ══════════════════════════════════════════
+   ENROLL
+══════════════════════════════════════════ */
+function enrollToApp(){
+  document.getElementById('cta-section').scrollIntoView({behavior:'smooth'});
+  showToast('Download the app to enroll','📱');
+}
+
+/* ══════════════════════════════════════════
+   CRAFT SELECT + FILTER
+══════════════════════════════════════════ */
+let activeCraft=null;
+function selectCraft(el){
+  const craft=el.dataset.craft;
+  if(activeCraft===craft){
+    el.classList.remove('active');activeCraft=null;
+    filterClasses('all');setFilterBtn('all');
+    document.getElementById('craftHint').textContent='👆 Select a craft to filter classes';
+  } else {
+    document.querySelectorAll('.ccraft').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');activeCraft=craft;
+    filterClasses(craft);setFilterBtn(craft);
+    const name=el.querySelector('h3').textContent;
+    document.getElementById('craftHint').textContent=`Showing classes for ${name} — click again to clear`;
+    document.getElementById('classes').scrollIntoView({behavior:'smooth'});
+    showToast(`Showing ${name} classes`,'🎯');
+  }
+}
+function setFilterBtn(craft){
+  document.querySelectorAll('.cl-filter').forEach(b=>b.classList.toggle('on',b.dataset.filter===craft));
+}
+function filterClasses(craft,btn){
+  if(btn){
+    document.querySelectorAll('.cl-filter').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    if(craft!=='all'){
+      document.querySelectorAll('.ccraft').forEach(c=>c.classList.toggle('active',c.dataset.craft===craft));
+      activeCraft=craft;
+    } else {
+      document.querySelectorAll('.ccraft').forEach(c=>c.classList.remove('active'));
+      activeCraft=null;
+      document.getElementById('craftHint').textContent='👆 Select a craft to filter classes';
+    }
+  }
+  let visible=0;
+  document.querySelectorAll('.clcard').forEach(c=>{
+    const show=craft==='all'||c.dataset.craft===craft;
+    c.classList.toggle('hidden',!show);
+    if(show)visible++;
+  });
+  document.getElementById('noClasses').classList.toggle('show',visible===0);
+}
+</script>
+</body>
+</html>
