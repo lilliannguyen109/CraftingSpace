@@ -58,20 +58,12 @@ This project was grounded in user research before any design decisions were made
 
 ## Team
 
-| Name | Role |
-|------|------|
+| Name | 
+|------|
 | Aliyah Mcrae |
 | Elizabeth Alvarez |
 | Lillian Nguyen |
 | Rodas Tekle | 
-
----
-
-## Course
-
-**CSE 440 — Human-Computer Interaction**  
-University of Washington, Allen School of Computer Science & Engineering  
-Winter 2026
 
 ---
 
