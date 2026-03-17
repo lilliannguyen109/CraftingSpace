@@ -170,7 +170,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.
 <nav>
   <a class="logo" onclick="showSection('home')"><img src="logo.png" alt="CraftSpace Logo" style="height:40px;width:auto;"></a>
   <ul class="nav-anchors">
-    <li><a href="#" data-section="behind" onclick="showSection('behind');return false;">Behind the App</a></li>
+    <li><a href="#" data-section="behind" onclick="showSection('behind');return false;">Design Process</a></li>
     <li><a href="#" data-section="inside" onclick="showSection('inside');return false;">Inside the App</a></li>
     <li><a href="#" data-section="howworks" onclick="showSection('howworks');return false;">How It Works</a></li>
   </ul>
@@ -199,13 +199,13 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.
 </section>
 </div>
 
-<!-- BEHIND THE APP -->
+<!-- Design Process -->
 <div id="behind-wrap" style="display:none;">
 
 <div class="problem-solution" id="problem">
   <div class="ps-container">
     <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">Why We Built This</span></div>
-    <h2 class="sec-h">Why CraftSpace Exists</h2>
+    <h2 class="sec-h">Understanding the Problem</h2>
     <p class="sec-sub">Most beginners give up before they start — too many options, no clear guidance, and shared studio spaces that feel intimidating and inaccessible.</p>
     <p class="sec-sub">CraftSpace bridges your phone and the studio smart board so you always know what to make, what to grab, and who to ask.</p>
   </div>
@@ -220,11 +220,13 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.
   <h2 class="sec-h">The CraftSpace Smart Board</h2>
 
   <p class="sec-sub">
-    CraftSpace connects your phone directly to a smart board inside the studio.
-    When you arrive, the board automatically displays your tutorial, materials,
-    and step-by-step guidance so you can focus on making instead of figuring out
-    what to do next.
-  </p>
+  The CraftSpace smart board connects the physical studio with the
+  digital guidance provided by the mobile app. When a user selects a
+  craft on their phone, the smart board displays the tutorial,
+  materials, and step-by-step instructions on a large shared screen.
+  This allows beginners to follow instructions easily while keeping
+  their hands free to work with tools and materials.
+</p>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-top:2rem;align-items:center;">
 
@@ -323,7 +325,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2.
 <div class="page-full" id="crafts">
 <div class="inner">
   <div class="sec-label"><div class="sec-line"></div><span class="sec-tag">In the App</span></div>
-  <h2 class="sec-h">Four hands-on crafts</h2>
+  <h2 class="sec-h">Craft Exploration</h2>
   <p class="sec-sub">Browse and filter by craft type in the app. Each includes beginner-friendly tutorials, equipment guides, and available classes at our studio.</p>
   <div class="craft-grid" id="craftGrid">
     <div class="ccraft" data-craft="crocheting" onclick="selectCraft(this)">
