@@ -10,7 +10,7 @@
 
 CraftSpace is a concept product designed for beginner crafters who want to learn hands-on skills in a studio environment without the intimidation. The app connects your phone to a studio smart board, so when you walk in, your workspace is already set up for the craft you chose.
 
-Built as a capstone project for **CSE 440: Human-Computer Interaction** at the **University of Washington Allen School**, Winter 2026.
+Built as a final project for **CSE 440: Human-Computer Interaction** at the **University of Washington Allen School**, Winter 2026.
 
 ---
 
